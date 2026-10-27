@@ -1,0 +1,16 @@
+# .NET build outputs
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+node_modules/
+
+# Local NEO cache files (runtime data, never committed)
+src/NeoTracker.Api/App_Data/
+*.cache.json
