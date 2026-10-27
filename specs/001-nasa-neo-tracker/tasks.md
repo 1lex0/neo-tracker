@@ -15,9 +15,9 @@ and verified as an incremental deliverable.
 
 **Purpose**: Create the application projects and runnable solution structure.
 
-- [ ] T001 [P] Create `NeoTracker.sln`, `src/NeoTracker.Api/NeoTracker.Api.csproj`, `src/NeoTracker.Core/NeoTracker.Core.csproj`, and `tests/NeoTracker.UnitTests/NeoTracker.UnitTests.csproj`; add both source projects and the xUnit test project to the root solution and reference Core from Api and UnitTests.
-- [ ] T002 [P] Scaffold the React + TypeScript Vite application under `frontend/` and configure `frontend/vite.config.ts` to proxy `/api` requests to the local ASP.NET Core API.
-- [ ] T003 Add the shared root `.gitignore` entries for .NET build outputs, `frontend/node_modules/`, generated Vite output, and local cache files in `.gitignore`.
+- [X] T001 [P] Create `NeoTracker.sln`, `src/NeoTracker.Api/NeoTracker.Api.csproj`, `src/NeoTracker.Core/NeoTracker.Core.csproj`, and `tests/NeoTracker.UnitTests/NeoTracker.UnitTests.csproj`; add both source projects and the xUnit test project to the root solution and reference Core from Api and UnitTests.
+- [X] T002 [P] Scaffold the React + TypeScript Vite application under `frontend/` and configure `frontend/vite.config.ts` to proxy `/api` requests to the local ASP.NET Core API.
+- [X] T003 Add the shared root `.gitignore` entries for .NET build outputs, `frontend/node_modules/`, generated Vite output, and local cache files in `.gitignore`.
 
 ---
 
