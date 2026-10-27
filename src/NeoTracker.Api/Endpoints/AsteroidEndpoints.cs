@@ -1,6 +1,6 @@
-using System.Globalization;
 using NeoTracker.Core.Abstractions;
 using NeoTracker.Core.Models;
+using NeoTracker.Core.Validation;
 
 namespace NeoTracker.Api.Endpoints;
 
@@ -31,9 +31,7 @@ public static class AsteroidEndpoints
     /// </summary>
     public static async Task<IResult> GetLatestCachedAsync(string? requestedDate, IDailyResultService service, CancellationToken cancellationToken)
     {
-        SelectedDate? requested = DateOnly.TryParseExact(requestedDate, SelectedDate.Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed)
-            ? new SelectedDate(parsed)
-            : null;
+        var requested = SelectedDateValidator.Validate(requestedDate).Date;
         return ToLatestCachedResult(await service.GetLatestCachedAsync(cancellationToken), requested);
     }
 

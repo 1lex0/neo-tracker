@@ -111,14 +111,14 @@ zero NASA client calls.
 
 ### Tests for User Story 3
 
-- [ ] T030 [P] [US3] Add xUnit cases for empty values, malformed format, February 30, non-leap-year February 29, and valid leap-day dates in `tests/NeoTracker.UnitTests/Validation/SelectedDateValidatorTests.cs`.
-- [ ] T031 [P] [US3] Add an xUnit endpoint/service test proving invalid dates return `400 invalid_date` and do not invoke the NASA client in `tests/NeoTracker.UnitTests/Services/DailyResultServiceTests.cs`.
+- [X] T030 [P] [US3] Add xUnit cases for empty values, malformed format, February 30, non-leap-year February 29, and valid leap-day dates in `tests/NeoTracker.UnitTests/Validation/SelectedDateValidatorTests.cs`.
+- [X] T031 [P] [US3] Add an xUnit endpoint/service test proving invalid dates return `400 invalid_date` and do not invoke the NASA client in `tests/NeoTracker.UnitTests/Services/DailyResultServiceTests.cs`.
 
 ### Implementation for User Story 3
 
-- [ ] T032 [US3] Implement exact `YYYY-MM-DD` Gregorian date validation in `src/NeoTracker.Core/Validation/SelectedDateValidator.cs`; reject empty input, extra whitespace, invalid separators, out-of-range values, and impossible calendar dates.
-- [ ] T033 [US3] Apply `SelectedDateValidator` before cache selection or NASA calls in `src/NeoTracker.Core/Services/DailyResultService.cs` and map validation failures to `400 invalid_date` in `src/NeoTracker.Api/Endpoints/AsteroidEndpoints.cs`.
-- [ ] T034 [US3] Update `frontend/src/components/DateSearchForm.tsx` to show required, format, and impossible-date messages; keep the request button disabled for an empty field and prevent invalid submissions from calling the backend.
+- [X] T032 [US3] Implement exact `YYYY-MM-DD` Gregorian date validation in `src/NeoTracker.Core/Validation/SelectedDateValidator.cs`; reject empty input, extra whitespace, invalid separators, out-of-range values, and impossible calendar dates.
+- [X] T033 [US3] Apply `SelectedDateValidator` before cache selection or NASA calls in `src/NeoTracker.Core/Services/DailyResultService.cs` and map validation failures to `400 invalid_date` in `src/NeoTracker.Api/Endpoints/AsteroidEndpoints.cs`.
+- [X] T034 [US3] Update `frontend/src/components/DateSearchForm.tsx` to show required, format, and impossible-date messages; keep the request button disabled for an empty field and prevent invalid submissions from calling the backend.
 
 **Checkpoint**: Invalid values are rejected consistently in UI and backend, with no
 upstream request.

@@ -1,3 +1,5 @@
+using NeoTracker.Core.Validation;
+
 namespace NeoTracker.Core.Models;
 
 /// <summary>
@@ -20,5 +22,5 @@ public abstract record DailyResultOutcome
     public sealed record UpstreamFailure(SelectedDate RequestedDate, string Reason, CachedDailyResult? Offer) : DailyResultOutcome;
 
     /// <summary>The input is not a real date in YYYY-MM-DD form; nothing was requested.</summary>
-    public sealed record InvalidDate(string Message) : DailyResultOutcome;
+    public sealed record InvalidDate(DateValidationError Error, string Message) : DailyResultOutcome;
 }

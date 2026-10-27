@@ -1,6 +1,6 @@
-using System.Globalization;
 using NeoTracker.Core.Abstractions;
 using NeoTracker.Core.Models;
+using NeoTracker.Core.Validation;
 
 namespace NeoTracker.Core.Services;
 
@@ -13,10 +13,10 @@ public sealed class DailyResultService(INasaNeoClient nasaClient, IDailyResultCa
 {
     public async Task<DailyResultOutcome> GetForDateAsync(string? rawDate, CancellationToken cancellationToken)
     {
-        if (!DateOnly.TryParseExact(rawDate, SelectedDate.Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
-            return new DailyResultOutcome.InvalidDate("Enter a real date in YYYY-MM-DD format.");
-
-        var date = new SelectedDate(parsed);
+        // Validation runs before any cache access or NASA request.
+        var validation = SelectedDateValidator.Validate(rawDate);
+        if (validation.Date is not { } date)
+            return new DailyResultOutcome.InvalidDate(validation.Error, validation.Message!);
 
         DailyResult result;
         try

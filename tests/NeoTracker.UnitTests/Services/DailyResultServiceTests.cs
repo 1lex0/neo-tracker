@@ -112,6 +112,52 @@ public class DailyResultServiceTests
         Assert.Empty(nasa.Requests);
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("2026/10/27")]
+    [InlineData("2026-02-30")]
+    [InlineData("2025-02-29")]
+    public async Task InvalidDate_ReturnsInvalidDateWithoutTouchingNasaOrCache(string? input)
+    {
+        var nasa = FakeNasaNeoClient.Returning(d => TestData.Day(d, Now, 1));
+        var cache = new InMemoryDailyResultCache(TestData.Cached(TestData.Date(2026, 10, 26), TestData.Utc(2026, 10, 26), 1));
+
+        var outcome = await new DailyResultService(nasa, cache).GetForDateAsync(input, CancellationToken.None);
+
+        Assert.IsType<DailyResultOutcome.InvalidDate>(outcome);
+        Assert.Empty(nasa.Requests);
+        Assert.Equal(0, cache.ReadCount);
+    }
+
+    [Fact]
+    public async Task Endpoint_InvalidDate_Returns400InvalidDateWithoutNasaRequest()
+    {
+        var nasa = FakeNasaNeoClient.Returning(d => TestData.Day(d, Now, 1));
+        var service = new DailyResultService(nasa, new InMemoryDailyResultCache());
+
+        var result = await AsteroidEndpoints.GetForDateAsync("2026-02-31", service, CancellationToken.None);
+
+        var badRequest = Assert.IsType<BadRequest<ApiError>>(result);
+        Assert.Equal(StatusCodes.Status400BadRequest, badRequest.StatusCode);
+        Assert.Equal(ApiError.InvalidDateCode, badRequest.Value!.Code);
+        Assert.False(string.IsNullOrWhiteSpace(badRequest.Value.Message));
+        Assert.Empty(nasa.Requests);
+    }
+
+    [Fact]
+    public async Task CorrectedDate_AfterInvalidAttempt_ProceedsWithRequest()
+    {
+        var nasa = FakeNasaNeoClient.Returning(d => TestData.Day(d, Now, 1));
+        var service = new DailyResultService(nasa, new InMemoryDailyResultCache());
+
+        await service.GetForDateAsync("2026-02-30", CancellationToken.None);
+        var outcome = await service.GetForDateAsync("2026-02-28", CancellationToken.None);
+
+        Assert.IsType<DailyResultOutcome.Fresh>(outcome);
+        Assert.Equal([TestData.Date(2026, 2, 28)], nasa.Requests);
+    }
+
     // Endpoint mapping of the outcomes above (contracts/backend-api.md).
 
     [Fact]
