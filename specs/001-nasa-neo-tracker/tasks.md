@@ -50,19 +50,19 @@ and the rendered frontend view.
 
 ### Tests for User Story 1
 
-- [ ] T011 [P] [US1] Add the representative successful NASA NeoWs date-keyed feed fixture `tests/NeoTracker.UnitTests/Fixtures/nasa-feed-sample.json`.
-- [ ] T012 [US1] Add xUnit tests for NASA feed parsing, date-keyed observation selection, required asteroid values, and unit mapping in `tests/NeoTracker.UnitTests/Clients/NasaFeedParserTests.cs`; use the fixture created by T011.
+- [X] T011 [P] [US1] Add the representative successful NASA NeoWs date-keyed feed fixture `tests/NeoTracker.UnitTests/Fixtures/nasa-feed-sample.json`.
+- [X] T012 [US1] Add xUnit tests for NASA feed parsing, date-keyed observation selection, required asteroid values, and unit mapping in `tests/NeoTracker.UnitTests/Clients/NasaFeedParserTests.cs`; use the fixture created by T011.
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Implement NASA feed parsing in `src/NeoTracker.Core/Services/NasaFeedParser.cs`; map `estimated_diameter.kilometers` bounds to meters, use NASA `relative_velocity.kilometers_per_hour` and `miss_distance.kilometers`, and preserve the potential-hazard flag and object identity.
-- [ ] T014 [US1] Implement `INasaNeoClient` in `src/NeoTracker.Api/Clients/NasaNeoClient.cs` using the injected `HttpClient`; request the single selected day with equal `start_date` and `end_date`, URL-encode the configured key, and return parsed data plus UTC receipt time.
-- [ ] T015 [US1] Implement the fresh-result orchestration path in `src/NeoTracker.Core/Services/DailyResultService.cs` and expose `GET /api/asteroids?date={date}` in `src/NeoTracker.Api/Endpoints/AsteroidEndpoints.cs` using the response schema in `specs/001-nasa-neo-tracker/contracts/backend-api.md`.
-- [ ] T016 [P] [US1] Define matching frontend asteroid and daily-result types in `frontend/src/models/asteroid.ts`.
-- [ ] T017 [P] [US1] Implement the backend-only request wrapper for `GET /api/asteroids?date=...` in `frontend/src/api/asteroids.ts`; convert non-success responses into typed application errors without calling NASA from the browser.
-- [ ] T018 [US1] Implement the date entry form and request submission state in `frontend/src/components/DateSearchForm.tsx`; keep submission unavailable when the date field is empty and call the frontend API wrapper only for a valid user action.
-- [ ] T019 [P] [US1] Implement the asteroid row/card view in `frontend/src/components/AsteroidList.tsx`; show name, min-max diameter in meters, speed in km/h, distance in km, and a visually distinct hazard status.
-- [ ] T020 [US1] Connect search, result list, source attribution, and response timestamp in `frontend/src/App.tsx`; show loading, successful result, and no-result states without presenting stale data as fresh.
+- [X] T013 [US1] Implement NASA feed parsing in `src/NeoTracker.Core/Services/NasaFeedParser.cs`; map `estimated_diameter.kilometers` bounds to meters, use NASA `relative_velocity.kilometers_per_hour` and `miss_distance.kilometers`, and preserve the potential-hazard flag and object identity.
+- [X] T014 [US1] Implement `INasaNeoClient` in `src/NeoTracker.Api/Clients/NasaNeoClient.cs` using the injected `HttpClient`; request the single selected day with equal `start_date` and `end_date`, URL-encode the configured key, and return parsed data plus UTC receipt time.
+- [X] T015 [US1] Implement the fresh-result orchestration path in `src/NeoTracker.Core/Services/DailyResultService.cs` and expose `GET /api/asteroids?date={date}` in `src/NeoTracker.Api/Endpoints/AsteroidEndpoints.cs` using the response schema in `specs/001-nasa-neo-tracker/contracts/backend-api.md`.
+- [X] T016 [P] [US1] Define matching frontend asteroid and daily-result types in `frontend/src/models/asteroid.ts`.
+- [X] T017 [P] [US1] Implement the backend-only request wrapper for `GET /api/asteroids?date=...` in `frontend/src/api/asteroids.ts`; convert non-success responses into typed application errors without calling NASA from the browser.
+- [X] T018 [US1] Implement the date entry form and request submission state in `frontend/src/components/DateSearchForm.tsx`; keep submission unavailable when the date field is empty and call the frontend API wrapper only for a valid user action.
+- [X] T019 [P] [US1] Implement the asteroid row/card view in `frontend/src/components/AsteroidList.tsx`; show name, min-max diameter in meters, speed in km/h, distance in km, and a visually distinct hazard status.
+- [X] T020 [US1] Connect search, result list, source attribution, and response timestamp in `frontend/src/App.tsx`; show loading, successful result, and no-result states without presenting stale data as fresh.
 
 **Checkpoint**: A fresh non-empty day can be retrieved through the backend and viewed
 in the frontend; parsing is tested without live network access.

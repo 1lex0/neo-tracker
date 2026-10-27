@@ -2,8 +2,10 @@ using System.Text.Json;
 using Microsoft.Extensions.Options;
 using NeoTracker.Api.Clients;
 using NeoTracker.Api.Configuration;
+using NeoTracker.Api.Endpoints;
 using NeoTracker.Api.Persistence;
 using NeoTracker.Core.Abstractions;
+using NeoTracker.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,7 @@ builder.Services.AddOptions<NasaApiOptions>()
     });
 
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddScoped<IDailyResultService, DailyResultService>();
 
 builder.Services.AddSingleton<IDailyResultCache>(services =>
 {
@@ -41,5 +44,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 var app = builder.Build();
+
+app.MapAsteroidEndpoints();
 
 app.Run();
