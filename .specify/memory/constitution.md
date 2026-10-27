@@ -1,50 +1,76 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+Version change: 1.0.0 → 1.1.0 (material expansion of Secret-Free Source)
+Modified principles:
+- Secret-Free Source → Secret-Free Source (narrow exception for NASA's public DEMO_KEY)
+Added sections: None
+Removed sections: None
+Follow-up TODO: Record the original ratification date when known; remove this report before commit.
+-->
+
+# Neo Tracker Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Reliable External API Handling
+The application MUST remain usable when the network is unavailable or an external API
+returns an error, an empty response, or data that cannot be parsed. It MUST show the user
+a clear, actionable message instead of crashing or presenting a successful result for a
+failed request. External responses MUST be validated before the application uses them.
+This keeps failures understandable and prevents invalid data from leaking into the UI.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Durable Local Cache
+All successfully received external data MUST be cached locally and remain available after
+the application restarts. Cache selection and fallback behavior MUST be implemented
+outside the UI so that network failures can use valid cached data consistently.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Separated, Tested Business Logic
+API response parsing, input validation, and cache selection MUST be separated from UI
+code. These business rules MUST have unit tests. Keeping the logic independent makes
+failure behavior predictable and lets it be verified without rendering the UI.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Secret-Free Source
+Private API keys and other secrets MUST NOT be stored in source code or committed
+repository files. They MUST be supplied through an appropriate local or deployment
+configuration.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+The publicly documented NASA `DEMO_KEY` MAY be used as a default only when explicitly
+requested for a feature. The application MUST allow `NASA_API_KEY` from runtime
+configuration to override this default, and MUST NOT treat `DEMO_KEY` as a private
+credential or extend this exception to any other API key.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### V. Simplicity
+Implementations MUST prefer the simplest design that satisfies user needs. The
+application MUST NOT introduce a database or authentication unless the constitution is
+amended to authorize that complexity.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## Technical Constraints
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+The application MUST communicate API and network failures to the user in understandable
+language. A valid cached result MAY be shown when a request fails, but the application
+MUST NOT represent stale or missing data as a successful fresh response. Persistent
+caching MUST use a local mechanism that survives application restarts; a database is
+not permitted.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Quality Workflow
+
+Changes to API parsing, input validation, or cache selection MUST include or update
+unit tests for the affected behavior, including relevant failure and empty-response
+cases. The README MUST document one command that runs the project's tests. Changes MUST
+preserve the principles in this constitution, and reviewers MUST check that behavior and
+tests comply before integration.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution governs application design and implementation. Amendments MUST
+document their rationale, be reviewed and approved by the project maintainers, and update
+the version and last-amended date. Version changes follow semantic versioning: MAJOR for
+removing or redefining a principle, MINOR for adding a principle or materially expanding
+requirements, and PATCH for clarifications that do not change requirements.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Every change review MUST consider reliability at external API boundaries, durable cache
+behavior, separation and unit coverage of business logic, and protection of secrets.
+Any proposed exception to a principle requires an approved constitution amendment;
+implementation changes MUST NOT silently weaken these requirements.
+
+**Version**: 1.1.0 | **Ratified**: TODO(RATIFICATION_DATE): original adoption date unknown | **Last Amended**: 2026-10-27
