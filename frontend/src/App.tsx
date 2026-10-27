@@ -18,8 +18,13 @@ type ViewState =
     }
 
 const timestampFormat = new Intl.DateTimeFormat('ru-RU', {
-  dateStyle: 'long',
-  timeStyle: 'medium',
+  // dateStyle/timeStyle cannot be combined with timeZoneName, so list the parts explicitly.
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
   timeZoneName: 'short',
 })
 
