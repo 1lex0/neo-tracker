@@ -45,6 +45,13 @@ async function getJson(url: string, signal?: AbortSignal): Promise<DailyResultRe
   const body: unknown = await response.json().catch(() => null)
 
   if (!response.ok) {
+    // The dev proxy (or a reverse proxy) answers 502/504 without our JSON body when the API is down.
+    if (!isApiErrorBody(body) && [502, 504].includes(response.status)) {
+      throw new AsteroidApiError(response.status, {
+        code: NETWORK_ERROR_CODE,
+        message: 'The application server could not be reached.',
+      })
+    }
     throw new AsteroidApiError(
       response.status,
       isApiErrorBody(body)
