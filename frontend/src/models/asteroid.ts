@@ -13,7 +13,7 @@ export interface Asteroid {
 export type FallbackReason = 'no-results' | 'upstream-unavailable'
 
 export interface DailyResultResponse {
-  requestedDate: string
+  requestedDate: string | null
   displayedDate: string | null
   source: string
   receivedAtUtc: string

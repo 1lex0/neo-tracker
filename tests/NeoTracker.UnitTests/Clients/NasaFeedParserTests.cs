@@ -61,4 +61,77 @@ public class NasaFeedParserTests
         Assert.Equal(25329.9042945417, observation.RelativeVelocityKph, precision: 6);
         Assert.Equal(38767964.651138751, observation.MissDistanceKm, precision: 3);
     }
+
+    [Fact]
+    public void Parse_ValidEmptyFeed_ReturnsSuccessfulEmptyDay()
+    {
+        const string json = """{ "element_count": 0, "near_earth_objects": { "2026-10-27": [] } }""";
+
+        var result = NasaFeedParser.Parse(json, RequestedDate, ReceivedAt);
+
+        Assert.True(result.IsEmpty);
+        Assert.Equal(RequestedDate.Value, result.Date);
+        Assert.Equal(ReceivedAt, result.ReceivedAtUtc);
+    }
+
+    [Fact]
+    public void Parse_FeedWithoutRequestedDateKey_ReturnsSuccessfulEmptyDay()
+    {
+        const string json = """{ "element_count": 0, "near_earth_objects": {} }""";
+
+        Assert.True(NasaFeedParser.Parse(json, RequestedDate, ReceivedAt).IsEmpty);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("not json")]
+    [InlineData("{ \"near_earth_objects\": ")]
+    [InlineData("[]")]
+    [InlineData("null")]
+    public void Parse_MalformedJson_Throws(string json)
+    {
+        Assert.Throws<NasaFeedFormatException>(() => NasaFeedParser.Parse(json, RequestedDate, ReceivedAt));
+    }
+
+    [Theory]
+    [InlineData("""{ "element_count": 0 }""")]
+    [InlineData("""{ "near_earth_objects": [] }""")]
+    [InlineData("""{ "near_earth_objects": { "2026-10-27": {} } }""")]
+    public void Parse_MissingOrMistypedFeedStructure_Throws(string json)
+    {
+        Assert.Throws<NasaFeedFormatException>(() => NasaFeedParser.Parse(json, RequestedDate, ReceivedAt));
+    }
+
+    public static TheoryData<string> BrokenAsteroids => new()
+    {
+        // missing name
+        """{ "id": "1", "estimated_diameter": { "kilometers": { "estimated_diameter_min": 0.1, "estimated_diameter_max": 0.2 } }, "is_potentially_hazardous_asteroid": false, "close_approach_data": [ { "close_approach_date": "2026-10-27", "relative_velocity": { "kilometers_per_hour": "1" }, "miss_distance": { "kilometers": "1" } } ] }""",
+        // missing id
+        """{ "name": "A", "estimated_diameter": { "kilometers": { "estimated_diameter_min": 0.1, "estimated_diameter_max": 0.2 } }, "is_potentially_hazardous_asteroid": false, "close_approach_data": [ { "close_approach_date": "2026-10-27", "relative_velocity": { "kilometers_per_hour": "1" }, "miss_distance": { "kilometers": "1" } } ] }""",
+        // missing diameter in kilometers
+        """{ "id": "1", "name": "A", "estimated_diameter": { "meters": { "estimated_diameter_min": 100, "estimated_diameter_max": 200 } }, "is_potentially_hazardous_asteroid": false, "close_approach_data": [ { "close_approach_date": "2026-10-27", "relative_velocity": { "kilometers_per_hour": "1" }, "miss_distance": { "kilometers": "1" } } ] }""",
+        // missing hazard flag
+        """{ "id": "1", "name": "A", "estimated_diameter": { "kilometers": { "estimated_diameter_min": 0.1, "estimated_diameter_max": 0.2 } }, "close_approach_data": [ { "close_approach_date": "2026-10-27", "relative_velocity": { "kilometers_per_hour": "1" }, "miss_distance": { "kilometers": "1" } } ] }""",
+        // hazard flag is not a boolean
+        """{ "id": "1", "name": "A", "estimated_diameter": { "kilometers": { "estimated_diameter_min": 0.1, "estimated_diameter_max": 0.2 } }, "is_potentially_hazardous_asteroid": "yes", "close_approach_data": [ { "close_approach_date": "2026-10-27", "relative_velocity": { "kilometers_per_hour": "1" }, "miss_distance": { "kilometers": "1" } } ] }""",
+        // no close approach data
+        """{ "id": "1", "name": "A", "estimated_diameter": { "kilometers": { "estimated_diameter_min": 0.1, "estimated_diameter_max": 0.2 } }, "is_potentially_hazardous_asteroid": false, "close_approach_data": [] }""",
+        // missing velocity
+        """{ "id": "1", "name": "A", "estimated_diameter": { "kilometers": { "estimated_diameter_min": 0.1, "estimated_diameter_max": 0.2 } }, "is_potentially_hazardous_asteroid": false, "close_approach_data": [ { "close_approach_date": "2026-10-27", "miss_distance": { "kilometers": "1" } } ] }""",
+        // non-numeric distance
+        """{ "id": "1", "name": "A", "estimated_diameter": { "kilometers": { "estimated_diameter_min": 0.1, "estimated_diameter_max": 0.2 } }, "is_potentially_hazardous_asteroid": false, "close_approach_data": [ { "close_approach_date": "2026-10-27", "relative_velocity": { "kilometers_per_hour": "1" }, "miss_distance": { "kilometers": "far" } } ] }""",
+        // negative diameter
+        """{ "id": "1", "name": "A", "estimated_diameter": { "kilometers": { "estimated_diameter_min": -0.1, "estimated_diameter_max": 0.2 } }, "is_potentially_hazardous_asteroid": false, "close_approach_data": [ { "close_approach_date": "2026-10-27", "relative_velocity": { "kilometers_per_hour": "1" }, "miss_distance": { "kilometers": "1" } } ] }""",
+        // maximum below minimum
+        """{ "id": "1", "name": "A", "estimated_diameter": { "kilometers": { "estimated_diameter_min": 0.3, "estimated_diameter_max": 0.2 } }, "is_potentially_hazardous_asteroid": false, "close_approach_data": [ { "close_approach_date": "2026-10-27", "relative_velocity": { "kilometers_per_hour": "1" }, "miss_distance": { "kilometers": "1" } } ] }""",
+    };
+
+    [Theory]
+    [MemberData(nameof(BrokenAsteroids))]
+    public void Parse_AsteroidWithMissingOrInvalidRequiredField_Throws(string asteroid)
+    {
+        var json = $$"""{ "near_earth_objects": { "2026-10-27": [ {{asteroid}} ] } }""";
+
+        Assert.Throws<NasaFeedFormatException>(() => NasaFeedParser.Parse(json, RequestedDate, ReceivedAt));
+    }
 }

@@ -25,6 +25,11 @@ export function fetchAsteroids(date: string, signal?: AbortSignal): Promise<Dail
   return getJson(`/api/asteroids?date=${encodeURIComponent(date)}`, signal)
 }
 
+/** Only called after the user explicitly chooses to view cached data during an outage. */
+export function fetchLatestCached(requestedDate: string, signal?: AbortSignal): Promise<DailyResultResponse> {
+  return getJson(`/api/asteroids/cache/latest?requestedDate=${encodeURIComponent(requestedDate)}`, signal)
+}
+
 async function getJson(url: string, signal?: AbortSignal): Promise<DailyResultResponse> {
   let response: Response
   try {
@@ -71,7 +76,7 @@ function isDailyResultResponse(value: unknown): value is DailyResultResponse {
   if (typeof value !== 'object' || value === null) return false
   const candidate = value as DailyResultResponse
   return (
-    typeof candidate.requestedDate === 'string' &&
+    (typeof candidate.requestedDate === 'string' || candidate.requestedDate === null) &&
     typeof candidate.source === 'string' &&
     typeof candidate.receivedAtUtc === 'string' &&
     typeof candidate.isFallback === 'boolean' &&

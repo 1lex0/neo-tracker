@@ -81,18 +81,18 @@ the user selects it.
 
 ### Tests for User Story 2
 
-- [ ] T021 [P] [US2] Add xUnit tests for a valid empty NASA feed, malformed JSON, missing required response fields, and non-success upstream HTTP status in `tests/NeoTracker.UnitTests/Clients/NasaFeedParserTests.cs` and `tests/NeoTracker.UnitTests/Clients/NasaNeoClientTests.cs`.
-- [ ] T022 [P] [US2] Add xUnit tests proving fallback selection returns the non-empty cached result with the latest receipt time, even when its date is later than the requested date, and ignores empty cached days in `tests/NeoTracker.UnitTests/Services/DailyResultFallbackTests.cs`.
-- [ ] T023 [P] [US2] Add xUnit persistence tests proving successful empty and non-empty daily results survive cache reload and failed writes do not replace the previous cache in `tests/NeoTracker.UnitTests/Persistence/JsonDailyResultCacheTests.cs`.
-- [ ] T024 [US2] Add xUnit orchestration tests for empty-result fallback, no eligible cache, upstream failure offers, and absence of cached observations from failure responses in `tests/NeoTracker.UnitTests/Services/DailyResultServiceTests.cs`.
+- [X] T021 [P] [US2] Add xUnit tests for a valid empty NASA feed, malformed JSON, missing required response fields, and non-success upstream HTTP status in `tests/NeoTracker.UnitTests/Clients/NasaFeedParserTests.cs` and `tests/NeoTracker.UnitTests/Clients/NasaNeoClientTests.cs`.
+- [X] T022 [P] [US2] Add xUnit tests proving fallback selection returns the non-empty cached result with the latest receipt time, even when its date is later than the requested date, and ignores empty cached days in `tests/NeoTracker.UnitTests/Services/DailyResultFallbackTests.cs`.
+- [X] T023 [P] [US2] Add xUnit persistence tests proving successful empty and non-empty daily results survive cache reload and failed writes do not replace the previous cache in `tests/NeoTracker.UnitTests/Persistence/JsonDailyResultCacheTests.cs`.
+- [X] T024 [US2] Add xUnit orchestration tests for empty-result fallback, no eligible cache, upstream failure offers, and absence of cached observations from failure responses in `tests/NeoTracker.UnitTests/Services/DailyResultServiceTests.cs`.
 
 ### Implementation for User Story 2
 
-- [ ] T025 [US2] Implement cache selection in `src/NeoTracker.Core/Services/DailyResultService.cs`; persist every successful upstream result, but choose the latest-received result with at least one observation for fallback regardless of calendar-date ordering.
-- [ ] T026 [US2] Update `GET /api/asteroids?date={date}` in `src/NeoTracker.Api/Endpoints/AsteroidEndpoints.cs` to automatically return the selected cached non-empty day with `isFallback=true`, `fallbackReason=no-results`, requested date, and displayed date when NASA returns an empty list.
-- [ ] T027 [US2] Add explicit upstream-failure handling in `src/NeoTracker.Api/Endpoints/AsteroidEndpoints.cs`; return `503` with a clear error code/message and cached availability/date metadata, but never include cached asteroid observations in that response.
-- [ ] T028 [US2] Add `GET /api/asteroids/cache/latest` in `src/NeoTracker.Api/Endpoints/AsteroidEndpoints.cs` to return the latest-received cached non-empty day only after the user requests it, or `404 cached_results_unavailable` if none exists.
-- [ ] T029 [US2] Implement the service-error message and explicit “view cached data” action in `frontend/src/App.tsx`; request `/api/asteroids/cache/latest` only after the user activates the action and label the cached date and failure reason.
+- [X] T025 [US2] Implement cache selection in `src/NeoTracker.Core/Services/DailyResultService.cs`; persist every successful upstream result, but choose the latest-received result with at least one observation for fallback regardless of calendar-date ordering.
+- [X] T026 [US2] Update `GET /api/asteroids?date={date}` in `src/NeoTracker.Api/Endpoints/AsteroidEndpoints.cs` to automatically return the selected cached non-empty day with `isFallback=true`, `fallbackReason=no-results`, requested date, and displayed date when NASA returns an empty list.
+- [X] T027 [US2] Add explicit upstream-failure handling in `src/NeoTracker.Api/Endpoints/AsteroidEndpoints.cs`; return `503` with a clear error code/message and cached availability/date metadata, but never include cached asteroid observations in that response.
+- [X] T028 [US2] Add `GET /api/asteroids/cache/latest` in `src/NeoTracker.Api/Endpoints/AsteroidEndpoints.cs` to return the latest-received cached non-empty day only after the user requests it, or `404 cached_results_unavailable` if none exists.
+- [X] T029 [US2] Implement the service-error message and explicit “view cached data” action in `frontend/src/App.tsx`; request `/api/asteroids/cache/latest` only after the user activates the action and label the cached date and failure reason.
 
 **Checkpoint**: Empty upstream results use the latest-received non-empty cache; upstream
 failures report the issue and offer cached data without displaying it before user

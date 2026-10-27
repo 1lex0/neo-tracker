@@ -6,7 +6,7 @@ namespace NeoTracker.Core.Models;
 /// Successful asteroid result body, as defined in contracts/backend-api.md.
 /// </summary>
 public sealed record ApiResponse(
-    string RequestedDate,
+    string? RequestedDate,
     string? DisplayedDate,
     string Source,
     DateTime ReceivedAtUtc,
