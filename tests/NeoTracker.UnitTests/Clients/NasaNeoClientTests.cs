@@ -1,4 +1,6 @@
 using System.Net;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using NeoTracker.Api.Clients;
@@ -13,7 +15,7 @@ public class NasaNeoClientTests
     private static readonly DateTimeOffset Now = new(2026, 10, 27, 21, 40, 0, TimeSpan.Zero);
 
     private static NasaNeoClient CreateClient(TestHttpMessageHandler handler, string apiKey = NasaApiOptions.DemoKey) =>
-        new(handler.CreateClient(), Options.Create(new NasaApiOptions { ApiKey = apiKey }), new FakeTimeProvider(Now));
+        new(handler.CreateClient(), Options.Create(new NasaApiOptions { ApiKey = apiKey }), new FakeTimeProvider(Now), NullLogger<NasaNeoClient>.Instance);
 
     [Fact]
     public async Task GetDailyResult_RequestsSingleDayWithEncodedKey()
@@ -82,6 +84,33 @@ public class NasaNeoClientTests
 
         await Assert.ThrowsAsync<NasaUnavailableException>(() =>
             CreateClient(handler).GetDailyResultAsync(TestData.Date(2026, 10, 27), CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Failures_AreLoggedWithoutApiKeyValue()
+    {
+        const string secret = "my-private-key-123";
+        var logger = new ListLogger<NasaNeoClient>();
+        var handler = TestHttpMessageHandler.Json("<html/>", HttpStatusCode.InternalServerError);
+        var client = new NasaNeoClient(handler.CreateClient(), Options.Create(new NasaApiOptions { ApiKey = secret }), new FakeTimeProvider(Now), logger);
+
+        await Assert.ThrowsAsync<NasaUnavailableException>(() => client.GetDailyResultAsync(TestData.Date(2026, 10, 27), CancellationToken.None));
+
+        var entry = Assert.Single(logger.Messages);
+        Assert.Contains("500", entry);
+        Assert.DoesNotContain(secret, entry);
+    }
+
+    private sealed class ListLogger<T> : ILogger<T>
+    {
+        public List<string> Messages { get; } = [];
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) =>
+            Messages.Add(formatter(state, exception) + exception);
     }
 
     [Fact]

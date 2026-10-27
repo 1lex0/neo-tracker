@@ -28,7 +28,9 @@ builder.Services.AddSingleton<IDailyResultCache>(services =>
     var environment = services.GetRequiredService<IHostEnvironment>();
     var configured = builder.Configuration["Cache:FilePath"];
     var path = string.IsNullOrWhiteSpace(configured) ? Path.Combine("App_Data", "neo-cache.json") : configured;
-    return new JsonDailyResultCache(Path.Combine(environment.ContentRootPath, path));
+    return new JsonDailyResultCache(
+        Path.Combine(environment.ContentRootPath, path),
+        services.GetRequiredService<ILogger<JsonDailyResultCache>>());
 });
 
 builder.Services.AddHttpClient<INasaNeoClient, NasaNeoClient>((services, client) =>

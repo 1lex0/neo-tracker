@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.Logging.Abstractions;
 using NeoTracker.Core.Abstractions;
 using NeoTracker.Core.Models;
 
@@ -24,16 +25,19 @@ public sealed class JsonDailyResultCache : IDailyResultCache
     private readonly SemaphoreSlim _gate = new(1, 1);
     private Dictionary<DateOnly, CachedDailyResult>? _entries;
 
-    public JsonDailyResultCache(string filePath)
-        : this(filePath, DefaultTempFilePath)
+    private readonly ILogger _logger;
+
+    public JsonDailyResultCache(string filePath, ILogger<JsonDailyResultCache>? logger = null)
+        : this(filePath, DefaultTempFilePath, logger)
     {
     }
 
-    internal JsonDailyResultCache(string filePath, Func<string, string> tempFilePathFactory)
+    internal JsonDailyResultCache(string filePath, Func<string, string> tempFilePathFactory, ILogger<JsonDailyResultCache>? logger = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
         _filePath = Path.GetFullPath(filePath);
         _tempFilePathFactory = tempFilePathFactory;
+        _logger = logger ?? NullLogger<JsonDailyResultCache>.Instance;
     }
 
     public string FilePath => _filePath;
@@ -70,6 +74,7 @@ public sealed class JsonDailyResultCache : IDailyResultCache
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or NotSupportedException)
             {
+                _logger.LogError(ex, "Failed to write NEO cache file {CacheFile} for {Date}; previous cache kept", _filePath, entry.Result.Date);
                 return false;
             }
 
@@ -104,6 +109,7 @@ public sealed class JsonDailyResultCache : IDailyResultCache
             {
                 // An unreadable cache must not take the application down. Keep a copy so
                 // the next successful write does not silently destroy it.
+                _logger.LogError(ex, "Failed to read NEO cache file {CacheFile}; starting with an empty cache", _filePath);
                 PreserveUnreadableFile();
                 entries.Clear();
             }
@@ -143,6 +149,7 @@ public sealed class JsonDailyResultCache : IDailyResultCache
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
+            _logger.LogWarning(ex, "Could not preserve unreadable NEO cache file {CacheFile}", _filePath);
         }
     }
 

@@ -129,10 +129,10 @@ upstream request.
 
 **Purpose**: Document and verify the complete vertical slice.
 
-- [ ] T035 [P] Document prerequisites, `NASA_API_KEY` override, `DEMO_KEY` default, cache location, frontend startup, and the root-level `dotnet test` command in `README.md`.
-- [ ] T036 [P] Add structured server-side logging for NASA transport failures, unsuccessful status codes, JSON parse failures, and cache read/write failures in `src/NeoTracker.Api/Clients/NasaNeoClient.cs` and `src/NeoTracker.Api/Persistence/JsonDailyResultCache.cs`; do not log API key values.
-- [ ] T037 Verify all unit tests run offline from the repository root with `dotnet test` and correct failures in `NeoTracker.sln` and `tests/NeoTracker.UnitTests/`.
-- [ ] T038 Execute the manual scenarios in `specs/001-nasa-neo-tracker/quickstart.md` and record any required corrections in the affected source files.
+- [X] T035 [P] Document prerequisites, `NASA_API_KEY` override, `DEMO_KEY` default, cache location, frontend startup, and the root-level `dotnet test` command in `README.md`.
+- [X] T036 [P] Add structured server-side logging for NASA transport failures, unsuccessful status codes, JSON parse failures, and cache read/write failures in `src/NeoTracker.Api/Clients/NasaNeoClient.cs` and `src/NeoTracker.Api/Persistence/JsonDailyResultCache.cs`; do not log API key values.
+- [X] T037 Verify all unit tests run offline from the repository root with `dotnet test` and correct failures in `NeoTracker.sln` and `tests/NeoTracker.UnitTests/`.
+- [X] T038 Execute the manual scenarios in `specs/001-nasa-neo-tracker/quickstart.md` and record any required corrections in the affected source files.
 
 ---
 
